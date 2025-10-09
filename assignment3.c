@@ -3,9 +3,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-// ------------------------------
-// Shared data and synchronization
-// ------------------------------
+//synchronization
 long balance = 0;
 long deposit_count = 0;
 long withdrawal_count = 0;
@@ -41,9 +39,6 @@ void* deposit_thread(void* arg) {
 
         // ----- Exit Section -----
         pthread_mutex_unlock(&balance_mutex);
-
-        // ----- Remainder Section -----
-        // (Optional small sleep or other non-critical work)
     }
 
     printf("I’m Thread A, I did %ld deposit operations and I got the bonus %ld times. balance = %ld\n",
@@ -54,7 +49,7 @@ void* deposit_thread(void* arg) {
 // ------------------------------
 // Withdrawal thread function (Thread B)
 // ------------------------------
-void* withdraw_thread(void* arg) {
+void* withdraw_thread(void* arg) { //Victoria
     while (withdrawal_count < MAX_WITHDRAWALS) {
         // ----- Entry Section -----
         pthread_mutex_lock(&balance_mutex);
@@ -67,9 +62,6 @@ void* withdraw_thread(void* arg) {
 
         // ----- Exit Section -----
         pthread_mutex_unlock(&balance_mutex);
-
-        // ----- Remainder Section -----
-        // (Optional small sleep or non-critical task)
     }
 
     printf("I’m Thread B, I did %ld withdraw operations. balance = %ld\n",
@@ -98,3 +90,4 @@ int main() {
     pthread_mutex_destroy(&balance_mutex);
     return 0;
 }
+
