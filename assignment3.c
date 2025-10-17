@@ -20,14 +20,13 @@ int a_done = 0;
 
 
 // ------------------------------
-// Thread A — Deposit Operations (Arantza Mendoza)
+// Thread A — Deposit Operations 
 // ------------------------------
 void* deposit_thread(void* arg) {
     while (deposit_count < MAX_DEPOSITS) {
 
         pthread_mutex_lock(&balance_mutex);
 
-        // --- Critical Section ---
         if (deposit_count < MAX_DEPOSITS) {
             balance += 1;
             deposit_count++;
@@ -54,8 +53,6 @@ void* deposit_thread(void* arg) {
 
     pthread_exit(NULL);
 }
-
-
 
 // ------------------------------
 // Thread B — Withdrawal Operations 
