@@ -9,7 +9,9 @@ long deposit_count = 0;
 long withdrawal_count = 0;
 long bonus_count = 0;
 
-pthread_mutex_t balance_mutex;  // mutex for synchronization
+pthread_mutex_t balance_mutex;
+pthread_cond_t condA_done;
+int a_done = 0;
 
 #define MAX_DEPOSITS 2000000
 #define MAX_WITHDRAWALS 2000000
@@ -43,6 +45,11 @@ void* deposit_thread(void* arg) {
 
     printf("I’m Thread A, I did %ld deposit operations and I got the bonus %ld times. balance = %ld\n",
            deposit_count, bonus_count, balance);
+    pthread_mutex_lock(&balance_mutex);
+    a_done = 1;
+    pthread_cond_signal(&condA_done);
+    pthread_mutex_unlock(&balance_mutex);
+
     pthread_exit(NULL);
 }
 
