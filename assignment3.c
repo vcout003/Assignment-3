@@ -18,20 +18,21 @@ int a_done = 0;
 #define BONUS_AMOUNT 50
 #define BONUS_TRIGGER 200
 
+
 // ------------------------------
-// Deposit thread function (Thread A)
+// Thread A — Deposit Operations (Arantza Mendoza)
 // ------------------------------
 void* deposit_thread(void* arg) {
     while (deposit_count < MAX_DEPOSITS) {
-        // ----- Entry Section -----
+
         pthread_mutex_lock(&balance_mutex);
 
-        // ----- Critical Section -----
+        // --- Critical Section ---
         if (deposit_count < MAX_DEPOSITS) {
-            balance++;
+            balance += 1;
             deposit_count++;
 
-            // Check for bonus condition
+            // Bonus counts toward the 2,000,000 limit
             if (balance % BONUS_TRIGGER == 0 && deposit_count + BONUS_AMOUNT <= MAX_DEPOSITS) {
                 balance += BONUS_AMOUNT;
                 deposit_count += BONUS_AMOUNT;
@@ -39,12 +40,13 @@ void* deposit_thread(void* arg) {
             }
         }
 
-        // ----- Exit Section -----
         pthread_mutex_unlock(&balance_mutex);
     }
 
     printf("I’m Thread A, I did %ld deposit operations and I got the bonus %ld times. balance = %ld\n",
            deposit_count, bonus_count, balance);
+
+    // Signal Thread B
     pthread_mutex_lock(&balance_mutex);
     a_done = 1;
     pthread_cond_signal(&condA_done);
@@ -53,8 +55,10 @@ void* deposit_thread(void* arg) {
     pthread_exit(NULL);
 }
 
+
+
 // ------------------------------
-// Withdrawal thread function (Thread B)
+// Thread B — Withdrawal Operations 
 // ------------------------------
 void* withdraw_thread(void* arg) { //Victoria
     while (withdrawal_count < MAX_WITHDRAWALS) {
@@ -76,6 +80,7 @@ void* withdraw_thread(void* arg) { //Victoria
     pthread_exit(NULL);
 }
 
+
 // ------------------------------
 // Main / Parent Thread
 // ------------------------------
@@ -83,6 +88,7 @@ int main() {
     pthread_t threadA, threadB;
 
     pthread_mutex_init(&balance_mutex, NULL);
+    pthread_cond_init(&condA_done, NULL);
 
     // Create threads
     pthread_create(&threadA, NULL, deposit_thread, NULL);
@@ -95,6 +101,6 @@ int main() {
     printf("From parent: Final balance = %ld\n", balance);
 
     pthread_mutex_destroy(&balance_mutex);
+    pthread_cond_destroy(&condA_done);
     return 0;
 }
-
