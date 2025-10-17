@@ -42,8 +42,7 @@ void* deposit_thread(void* arg) {
         pthread_mutex_unlock(&balance_mutex);
     }
 
-    printf("I’m Thread A, I did %ld deposit operations and I got the bonus %ld times. balance = %ld\n",
-           deposit_count, bonus_count, balance);
+    printf("I’m Thread A, I did %ld deposit operations and I got the bonus %ld times. balance = %ld\n", deposit_count, bonus_count, balance);
 
     // Signal Thread B
     pthread_mutex_lock(&balance_mutex);
@@ -101,3 +100,4 @@ int main() {
     pthread_cond_destroy(&condA_done);
     return 0;
 }
+
